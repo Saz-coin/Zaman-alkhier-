@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة تحكم زمان الخير</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Tajawal', sans-serif; margin: 0; background:#0c0c0c; color:white; }
+         input, textarea, select { font-family: 'Tajawal', sans-serif; border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; background:#121212; color:white; padding:12px; }
+    .btn { cursor:pointer; border:none; border-radius:10px; font-weight:bold; transition: 0.3s; }
+    .btn:active { transform: scale(0.95); }
+    .loading-btn { opacity: 0.5; pointer-events: none; }
+    .price-tag { color: #ea580c; font-weight: bold; font-size: 13px; display: flex; align-items: center; gap: 3px; margin-top: 4px; }
+    .currency { font-size: 10px; opacity: 0.8; }
+    .helper-text { font-size: 12px; color: #9ca3af; margin-top: -10px; margin-bottom: 15px; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+    <script>eruda.init();</script>
+</head>
+<body>
+
+    <div id="login-page" style="min-height:100vh; display:flex; align-items:center; justify-content:center; padding:20px;">
+        <div style="background:#121212; padding:40px; border-radius:20px; width:100%; max-width:400px; text-align:center;">
+            <h2 style="font-size:28px; font-weight:900;">لوحة تحكم<br><span style="color:#ea580c;">زمان الخير</span></h2>
+            <input id="email" type="email" placeholder="الإيميل" style="width:100%; margin-bottom:14px; box-sizing:border-box;">
+            <input id="password" type="password" placeholder="الباسوورد" style="width:100%; margin-bottom:14px; box-sizing:border-box;">
+            <button onclick="login()" class="btn" style="width:100%; background:#ea580c; color:white; padding:14px;">دخول</button>
+            <p id="error" style="color:#ef4444; margin-top:14px; font-size:14px;"></p>
+        </div>
+    </div>
+
+    <div id="dashboard" style="display:none;">
+        <div style="background:#121212; border-bottom:1px solid rgba(255,255,255,0.1); padding:16px 24px; display:flex; justify-content:space-between; align-items:center; position:sticky; top:0; z-index:100;">
+            <h2 style="margin:0; font-size:20px;">زمان الخير</h2>
+            <button onclick="logout()" class="btn" style="background:#ef4444; padding:8px 16px; color:white;">خروج</button>
+        </div>
+
+        <div style="padding:20px; max-width:800px; margin:0 auto;">
+            <div style="background:#121212; padding:25px; border-radius:20px; margin-bottom:30px;">
+                <h3 style="color:#ea580c; margin-top:0;">إضافة محتوى جديد</h3>
+                <input id="item-id" type="hidden">
+                <input id="item-order-hidden" type="hidden">
+
+                <select id="item-section" onchange="loadItems(); toggleSliderHelper();" style="width:100%; margin-bottom:15px;">
+                    <option value="services">الخدمات</option>
+                    <option value="offers">العروض</option>
+                    <option value="slider">السلايدر الرئيسي</option>
+                </select>
+                <div id="slider-helper" class="helper-text" style="display:none;">
+                    ملاحظة: للسلايدر عبي العنوان + الصورة فقط. الوصف والسعر والتفاصيل ما رح تظهر.
+                </div>
+
+                <input id="item-title" placeholder="العنوان" style="width:100%; margin-bottom:10px; box-sizing:border-box;">
+                <textarea id="item-desc" placeholder="وصف الكرت" style="width:100%; margin-bottom:10px; height:60px; box-sizing:border-box;"></textarea>
+                <textarea id="item-details" placeholder="التفاصيل الكاملة (للخدمات فقط)" style="width:100%; margin-bottom:10px; height:100px; box-sizing:border-box;"></textarea>
+
+                <div style="display:flex; gap:10px; margin-bottom:15px;">
+                    <input id="item-img" placeholder="رابط الصورة" style="flex:1;">
+                    <input type="file" id="file-upload" accept="image/*" style="display:none;" onchange="uploadImage(this)">
+                    <button id="upload-btn" onclick="document.getElementById('file-upload').click()" class="btn" style="background:#ea580c; color:white; padding:0 15px;">رفع صورة</button>
+                </div>
+
+                <div style="position: relative; display: flex; align-items: center; margin-bottom: 20px;">
+                    <input id="item-price" type="number" step="0.001" placeholder="السعر (للخدمات فقط)" style="width:100%; box-sizing:border-box; padding-left: 50px;">
+                    <span style="position: absolute; left: 15px; color: #ea580c; font-weight: bold; font-size: 14px; pointer-events: none;">ر.ع</span>
+                </div>
+
+                <button id="save-btn" onclick="saveItem()" class="btn" style="width:100%; background:#16a34a; color:white; padding:15px;">حفظ ونشر</button>
+            </div>
+
+            <div style="background:#121212; padding:20px; border-radius:20px;">
+                <h3 id="list-title">المحتوى الحالي</h3>
+                <div id="items-list"></div>
+            </div>
+        </div>
+    </div>
+
+<script>
+const SB_URL = 'https://dbkjzpoopvmahoflwkdr.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRia2p6cG9vcHZtYWhvZmx3a2RyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY2MTUxNTAsImV4cCI6MjA5MjE5MTE1MH0.r1o_lNyALA2oTV2smlvg15p1ULSzQct_S7AUsgq-u30';
+const sb = window.supabase.createClient(SB_URL, SB_KEY);
+
+const BUCKET_NAME = 'Z images';
+
+// دالة لفك الـ JSON المزدوج
+function parseValue(value) {
+    let d = value;
+    try {
+        d = JSON.parse(d);
+        if (typeof d === 'string') d = JSON.parse(d);
+    } catch(e) {
+        d = { title: '', desc: '', details: '', img: '', price: '' };
+    }
+    return d;
+}
+
+function toggleSliderHelper() {
+    const section = document.getElementById('item-section').value;
+    const isSlider = section === 'slider';
+
+    document.getElementById('slider-helper').style.display = isSlider? 'block' : 'none';
+    document.getElementById('item-desc').style.display = isSlider? 'none' : 'block';
+    document.getElementById('item-details').style.display = isSlider? 'none' : 'block';
+    document.getElementById('item-price').parentElement.style.display = isSlider? 'none' : 'flex';
+}
+
+sb.auth.onAuthStateChange((e, s) => {
+    if (s) {
+        document.getElementById('login-page').style.display = 'none';
+        document.getElementById('dashboard').style.display = 'block';
+        loadItems();
+    } else {
+        document.getElementById('login-page').style.display = 'flex';
+        document.getElementById('dashboard').style.display = 'none';
+    }
+});
+
+async function login() {
+    const { error } = await sb.auth.signInWithPassword({
+        email: document.getElementById('email').value,
+        password: document.getElementById('password').value
+    });
+    if (error) document.getElementById('error').textContent = 'خطأ في الدخول';
+}
+
+async function logout() { await sb.auth.signOut(); }
+
+async function uploadImage(input) {
+    const file = input.files[0];
+    if (!file) return;
+
+    const btn = document.getElementById('upload-btn');
+    btn.textContent = '...';
+    btn.classList.add('loading-btn');
+
+    const fileName = `${Date.now()}_${file.name.replace(/\s+/g, '_')}`;
+    const filePath = `uploads/${fileName}`;
+
+    const { data, error } = await sb.storage
+   .from(BUCKET_NAME)
+   .upload(filePath, file);
+
+    if (error) {
+        console.error(error);
+        alert('خطأ: ' + error.message);
+        btn.textContent = 'رفع صورة';
+    } else {
+        const { data: urlData } = sb.storage.from(BUCKET_NAME).getPublicUrl(filePath);
+        document.getElementById('item-img').value = urlData.publicUrl;
+        btn.textContent = 'تم ✅';
+    }
+    btn.classList.remove('loading-btn');
+}
+
+async function saveItem() {
+    const btn = document.getElementById('save-btn');
+    const id = document.getElementById('item-id').value;
+    const section = document.getElementById('item-section').value;
+    const oldOrder = document.getElementById('item-order-hidden').value;
+
+    const itemData = {
+        title: document.getElementById('item-title').value,
+        desc: section === 'slider'? '' : document.getElementById('item-desc').value,
+        details: section === 'slider'? '' : document.getElementById('item-details').value,
+        img: document.getElementById('item-img').value,
+        price: section === 'slider'? '' : document.getElementById('item-price').value
+    };
+
+    if (!itemData.title) return alert('اكتب العنوان');
+    if (!itemData.img) return alert('ارفع صورة');
+
+    btn.classList.add('loading-btn');
+    btn.textContent = 'جاري الحفظ...';
+
+    const payload = {
+        section: section,
+        type: 'item',
+        key: itemData.title.toLowerCase().replace(/\s+/g, '-'),
+        value: JSON.stringify(itemData),
+        order: id? parseInt(oldOrder) : Date.now()
+    };
+
+    let res = id? await sb.from('content').update(payload).eq('id', id) : await sb.from('content').insert(payload);
+
+    if (res.error) alert('خطأ: ' + res.error.message);
+    else { alert('تم الحفظ'); clearForm(); loadItems(); }
+
+    btn.classList.remove('loading-btn');
+    btn.textContent = 'حفظ ونشر';
+}
+
+async function loadItems() {
+    const section = document.getElementById('item-section').value;
+    const list = document.getElementById('items-list');
+    const { data } = await sb.from('content').select('*').eq('section', section).order('order', { ascending: false });
+
+    list.innerHTML = '';
+    data?.forEach(item => {
+        const val = parseValue(item.value);
+        list.innerHTML += `
+            <div style="background:#0c0c0c; padding:12px; border-radius:12px; margin-bottom:10px; display:flex; align-items:center; gap:10px; border:1px solid rgba(255,255,255,0.05);">
+                <img src="${val.img || ''}" style="width:50px; height:50px; border-radius:8px; object-fit:cover; background:#121212;">
+                <div style="flex:1;">
+                    <div style="font-weight:bold; font-size:14px;">${val.title}</div>
+                    ${val.price? `<div class="price-tag">${val.price} <span class="currency">ر.ع</span></div>` : ''}
+                </div>
+                <div style="display:flex; gap:5px;">
+                    <button onclick="editItem('${item.id}')" style="color:#3b82f6; background:none; border:none; cursor:pointer;">تعديل</button>
+                    <button onclick="deleteItem('${item.id}')" style="color:#ef4444; background:none; border:none; cursor:pointer;">حذف</button>
+                </div>
+            </div>`;
+    });
+}
+
+async function editItem(id) {
+    const { data } = await sb.from('content').select('*').eq('id', id).single();
+    const val = parseValue(data.value);
+    document.getElementById('item-id').value = data.id;
+    document.getElementById('item-order-hidden').value = data.order;
+    document.getElementById('item-section').value = data.section;
+    document.getElementById('item-title').value = val.title;
+    document.getElementById('item-desc').value = val.desc;
+    document.getElementById('item-details').value = val.details;
+    document.getElementById('item-img').value = val.img;
+    document.getElementById('item-price').value = val.price;
+    toggleSliderHelper();
+    window.scrollTo({top:0, behavior:'smooth'});
+}
+
+async function deleteItem(id) {
+    if (confirm('حذف؟')) { await sb.from('content').delete().eq('id', id); loadItems(); }
+}
+
+function clearForm() {
+    document.getElementById('item-id').value = '';
+    document.getElementById('item-order-hidden').value = '';
+    document.getElementById('item-title').value = '';
+    document.getElementById('item-desc').value = '';
+    document.getElementById('item-details').value = '';
+    document.getElementById('item-img').value = '';
+    document.getElementById('item-price').value = '';
+    document.getElementById('upload-btn').textContent = 'رفع صورة';
+}
+</script>
+</body>
+</html>

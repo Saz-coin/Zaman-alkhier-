@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="dark">
+    <title>زمان الخير | أصالة الضيافة الملكية</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;500;700;900&family=Cairo:wght@600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="output.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        :root {
+            --gold: #D4AF37;
+            --dark-gold: #B8941F;
+            --bg-dark: #0A0A0A;
+            --card-bg: rgba(255, 255, 255, 0.02);
+            --gold-gradient: linear-gradient(135deg, #D4AF37 0%, #FBF5E6 50%, #B8941F 100%);
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: #FFFFFF;
+            font-family: 'Tajawal', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+
+     .royal-gradient {
+            background: radial-gradient(circle at center, #1a1a1a 0%, #0a0a0a 100%);
+        }
+
+      /* الكروت الملكية 3D بلون ماء الذهب */
+     .premium-card {
+            background: linear-gradient(145deg, #1a1a1a, #0d0d0d);
+            border: 2px solid transparent;
+            background-image: linear-gradient(145deg, #1a1a1a, #0d0d0d), var(--gold-gradient);
+            background-origin: border-box;
+            background-clip: padding-box, border-box;
+            border-radius: 16px;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow:
+                0 10px 30px rgba(0,0,0,0.8),
+                inset 0 1px 0 rgba(212, 175, 55, 0.2),
+                0 0 20px rgba(212, 175, 55, 0.1);
+            transform: perspective(1000px) rotateX(2deg);
+        }
+
+     .premium-card:hover {
+            transform: perspective(1000px) rotateX(0deg) translateY(-15px) scale(1.02);
+            box-shadow:
+                0 25px 50px rgba(0,0,0,0.9),
+                0 0 40px rgba(212, 175, 55, 0.3),
+                inset 0 1px 0 rgba(212, 175, 55, 0.4);
+        }
+
+     .btn-gold-outline {
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+     .btn-gold-outline:hover {
+            background: var(--gold);
+            color: #000;
+            box-shadow: 0 0 15px var(--gold);
+        }
+
+     .gold-gradient-text {
+            background: linear-gradient(to right, #D4AF37, #FBF5E6, #B8941F);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+     .text-gold { color: var(--gold); }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+     .animate-fade-in { animation: fadeIn 1s ease-out; }
+
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: #0a0a0a; }
+        ::-webkit-scrollbar-thumb { background: var(--gold); }
+        /* قص النص لسطرين */
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        /* تحسين إضافي للموبايل */
+        #slider-wrapper {
+            touch-action: pan-y;
+        }
+    </style>
+</head>
+<body class="royal-gradient">
+<!-- Tailwind Safelist Hack -->
+<div class="hidden">
+  <div class="w-full h-full w-screen h-screen min-h-screen max-w-full container mx-auto px-2 px-4 px-6 py-2 py-4 py-6 m-2 m-4 mt-2 mt-4 mb-2 mb-4 ml-2 mr-2 p-2 p-4 pt-2 pb-2 pl-2 pr-2
+  flex flex-col flex-row flex-wrap items-center items-start items-end justify-center justify-between justify-start justify-end gap-1 gap-2 gap-3 gap-4 gap-6
+  grid grid-cols-1 grid-cols-2 grid-cols-3 grid-cols-4 col-span-2
+  text-xs text-sm text-base text-lg text-xl text-2xl text-3xl text-4xl font-bold font-semibold font-normal text-center text-right text-left text-white text-black text-gray-400 text-gray-500
+  bg-black bg-white bg-gray-900 bg-gray-800 bg-transparent bg-opacity-50 bg-opacity-75
+  border border-2 border-gray-700 border-gray-600 rounded rounded-lg rounded-full
+  shadow shadow-lg shadow-xl hover:shadow-xl
+  absolute relative fixed sticky top-0 bottom-0 left-0 right-0 inset-0
+  z-0 z-10 z-20 z-30 z-40 z-50 -z-10
+  opacity-0 opacity-25 opacity-50 opacity-75 opacity-100
+  visible invisible overflow-hidden overflow-auto
+  translate-x-0 translate-x-full -translate-x-full translate-y-0 translate-y-full -translate-y-full
+  scale-90 scale-100 scale-110 rotate-180
+  transition transition-all transition-transform transition-opacity duration-150 duration-300 duration-500 ease-in-out
+  cursor-pointer pointer-events-none select-none
+  block inline-block inline
+  gold text-gold bg-gold border-gold dark-gold text-dark-gold bg-dark-gold"></div>
+</div>
+    <nav class="sticky top-0 w-full z-[100] px-8 py-4 backdrop-blur-md bg-black/60 border-b border-white/5 flex justify-between items-center">
+        <div class="flex items-center gap-4">
+            <img src="https://raw.githubusercontent.com/Saz-coin/Zaman-alkhier-/refs/heads/main/IMG_20260420_164917.png" class="h-12 w-auto" alt="Logo">
+<div class="text-left leading-[0.9] font-serif">
+    <span class="block text-sm md:text-xl font-bold tracking-[0.15em]">Zaman</span>
+    <span class="block text-sm md:text-xl font-bold tracking-[0.15em]">Alkhair</span>
+</div>
+        </div>
+<!-- زر تواصل معنا مع قائمة منسدلة -->
+<div class="relative">
+    <button id="contactDropdownBtn" class="btn-gold-outline px-6 py-2 text-xs font-bold rounded-full hover:bg-[#D4AF37] hover:text-black transition-all">
+        تواصل معنا
+    </button>
+    
+    <!-- القائمة المنسدلة -->
+    <div id="contactDropdown" class="hidden absolute left-0 mt-2 w-40 bg-[#111] border border-[#D4AF37]/30 rounded-lg shadow-xl z-50 overflow-hidden">
+        <a href="tel:+96894695338" class="block px-4 py-3 text-sm text-white hover:bg-[#D4AF37] hover:text-black transition-all text-center border-b border-[#D4AF37]/20">
+            📞 اتصال
+        </a>
+        <a href="https://wa.me/96894695338?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D9%8B%20%D8%B2%D9%85%D8%A7%D9%86%20%D8%A7%D9%84%D8%AE%D9%8A%D8%B1%20%D8%A3%D8%B1%D8%BA%D8%A8%20%D9%81%D9%8A%20%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1" target="_blank" class="block px-4 py-3 text-sm text-white hover:bg-[#D4AF37] hover:text-black transition-all text-center">
+            💬 واتساب
+        </a>
+    </div>
+</div>
+    </nav>
+
+    <!-- الهيرو سكشن أول شي -->
+    <section class="relative h-screen flex items-center justify-center text-center px-6 overflow-hidden">
+        <div class="absolute inset-0 z-0">
+            <img src="https://raw.githubusercontent.com/Saz-coin/Zaman-alkhier-/refs/heads/main/IMG_20260420_024519.jpg" class="w-full h-full object-cover opacity-40 scale-105" alt="Background">
+        <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/60"></div>
+        </div>
+
+        <div class="relative z-10 max-w-4xl">
+            <span class="text-gold tracking-[0.4em] text-sm mb-4 block animate-fade-in">EXPERIENCE THE AUTHENTICITY</span>
+            <h1 class="text-6xl md:text-9xl font-black mb-8 gold-gradient-text italic" style="font-family: 'Cairo';">زمان الخير</h1>
+            <p class="text-gray-400 text-lg md:text-xl font-light leading-relaxed max-w-2xl mx-auto mb-12">
+                حيث تلتقي عراقة الماضي بفخامة الحاضر في كل طبق نقدمه.
+            </p>
+<div class="flex justify-end">
+    <a href="menu.pdf" target="_blank" class="bg-[#D4AF37] text-black px-8 py-3 font-bold tracking-widest hover:bg-[#B8941F] transition-all rounded-lg">المنيو</a>
+</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- السلايدر بعد الهيرو - مصحح -->
+<section id="main-slider" class="relative w-full aspect-[16/9] md:aspect-[21/9] overflow-hidden bg-[#111]" style="display:none;">
+<div id="slider-wrapper" class="flex h-full w-full" style="cursor: grab; direction:ltr;"></div>
+        <div id="slider-dots" class="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2 z-10"></div>
+    </section>
+
+    <!-- قسم خدماتنا -->
+    <section id="services-section" class="py-32 px-8">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex flex-col items-center mb-20 text-center">
+                <div class="w-20 h-[1px] bg-[#D4AF37] mb-6"></div>
+                <h2 class="text-4xl font-light tracking-widest uppercase">خدماتنا</h2>
+            </div>
+            <div id="services-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+            </div>
+        </div>
+    </section>
+
+    <!-- قسم عروضنا -->
+    <section id="offers-section" class="py-32 px-8 bg-black/30">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex flex-col items-center mb-20 text-center">
+                <div class="w-20 h-[1px] bg-[#D4AF37] mb-6"></div>
+                <h2 class="text-4xl font-light tracking-widest uppercase">عروضنا</h2>
+            </div>
+            <div id="offers-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+            </div>
+        </div>
+    </section>
+
+    <footer class="py-20 border-t border-white/5 bg-[#111] text-center">
+        <img src="https://raw.githubusercontent.com/Saz-coin/Zaman-alkhier-/refs/heads/main/IMG_20260420_164917.png" class="h-16 mx-auto mb-8" alt="Logo">
+<p id="footerText" class="text-gray-400 tracking-[0.5em] text-xs uppercase"></p>
+    </footer>
+
+    <div id="detailsModal" class="fixed inset-0 z-[200] hidden items-center justify-center p-4 bg-black/95 backdrop-blur-xl">
+        <div class="bg-[#111] w-full max-w-2xl border border-white/10 overflow-hidden relative">
+            <button id="closeModalBtn" class="absolute top-4 right-4 w-10 h-10 flex items-center justify-center bg-black/50 hover:bg-black/80 text-white/70 hover:text-white text-2xl rounded-full z-[1001] transition-all border-white/10">
+                ✕
+            </button>
+            <div class="grid md:grid-cols-2">
+                <div class="h-64 md:h-auto">
+                    <img id="modalImg" src="" class="w-full h-full object-cover" alt="">
+                </div>
+                <div class="p-10 flex flex-col justify-center">
+                    <h3 id="modalTitle" class="text-3xl font-bold mb-4 gold-gradient-text" style="font-family: 'Cairo';"></h3>
+                    <p id="modalText" class="text-gray-400 font-light leading-relaxed mb-8"></p>
+                    <div id="priceBox" class="mb-8 border-b border-[#D4AF37]/20 pb-4">
+                        <span class="text-xs text-gray-500 block mb-1">السعر التقريبي</span>
+                        <span id="newPrice" class="text-2xl font-bold text-gold"></span>
+                    </div>
+<div class="grid grid-cols-2 gap-3">
+    <a href="tel:+96894695338" class="w-full bg-transparent border-2 border-[#D4AF37] py-4 text-[#D4AF37] font-bold hover:bg-[#D4AF37] hover:text-black transition-all text-center rounded-lg">اتصال</a>
+    <a id="whatsappOrderBtn" href="#" target="_blank" class="w-full bg-[#D4AF37] py-4 text-black font-black hover:brightness-110 transition-all text-center rounded-lg">واتساب</a>
+</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const SB_URL = 'https://dbkjzpoopvmahoflwkdr.supabase.co';
+        const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRia2p6cG9vcHZtYWhvZmx3a2RyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY2MTUxNTAsImV4cCI6MjA5MjE5MTE1MH0.r1o_lNyALA2oTV2smlvg15p1ULSzQct_S7AUsgq-u30';
+        const sb = window.supabase.createClient(SB_URL, SB_KEY);
+
+        const PHONE = "+96894695338";
+        let currentItemTitle = '';
+
+        // دالة لفك الـ JSON المزدوج
+        function parseValue(value) {
+            let d = value;
+            try {
+                d = JSON.parse(d);
+                if (typeof d === 'string') d = JSON.parse(d);
+            } catch(e) {
+                console.error('فشل تحويل البيانات:', e);
+                d = { title: '', desc: '', details: '', img: '', price: '' };
+            }
+            return d;
+        }
+
+        function formatOMR(price) {
+            return new Intl.NumberFormat('ar-OM', {
+                style: 'currency',
+                currency: 'OMR',
+                minimumFractionDigits: 3,
+                maximumFractionDigits: 3
+            }).format(price);
+        }
+
+        // ========== كود السلايدر المصحح ==========
+        let sliderState = {
+            currentSlide: 0,
+            totalSlides: 0,
+            isDragging: false,
+            startPos: 0,
+            currentTranslate: 0,
+            prevTranslate: 0,
+            animationID: 0,
+            autoSlideInterval: null,
+            containerWidth: 0,
+            startY: 0,
+            isScrolling: false
+        };
+
+        async function loadSlider() {
+            const sliderSection = document.getElementById('main-slider');
+            const { data, error } = await sb.from('content').select('*').eq('section', 'slider').order('order');
+
+            if (error ||!data || data.length === 0) {
+                sliderSection.style.display = 'none';
+                return;
+            }
+
+            sliderSection.style.display = 'block';
+            sliderState.totalSlides = data.length;
+            sliderState.currentSlide = 0;
+
+            const wrapper = document.getElementById('slider-wrapper');
+            const dots = document.getElementById('slider-dots');
+
+            // نخزن عرض الحاوية الصح
+            sliderState.containerWidth = document.getElementById('main-slider').offsetWidth;
+
+            wrapper.innerHTML = data.map((item, index) => {
+                const d = parseValue(item.value);
+                const imgUrl = d.img && typeof d.img === 'string' && d.img.startsWith('http')? d.img : '';
+
+                const imageContent = imgUrl
+          ? `<img src="${imgUrl}" class="w-full h-full object-cover select-none pointer-events-none" style="background-color: #111;" draggable="false" onerror="this.style.display='none'; this.parentElement.style.backgroundColor='#333';">`
+                    : `<div class="w-full h-full bg-[#333] flex items-center justify-center"><span class="text-gray-500 text-sm">لا يوجد صورة</span></div>`;
+
+return `<div class="w-full h-full shrink-0 relative bg-[#111] select-none overflow-hidden" style="flex: 0 0 100%;">
+                    ${imageContent}
+                    <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent p-4 md:p-6 pointer-events-none">
+                        <h3 class="text-lg md:text-xl font-bold text-white" style="font-family: 'Cairo';">${d.title || ''}</h3>
+                    </div>
+                </div>`;
+            }).join('');
+
+            dots.innerHTML = data.map((_, i) => `<button onclick="goToSlide(${i})" class="w-2 h-2 rounded-full bg-white/40 hover:bg-white transition-all"></button>`).join('');
+
+            addSliderEvents();
+            goToSlide(0);
+            startAutoSlide();
+
+            window.addEventListener('resize', () => {
+                sliderState.containerWidth = document.getElementById('main-slider').offsetWidth;
+            });
+        }
+
+        function addSliderEvents() {
+            const wrapper = document.getElementById('slider-wrapper');
+
+            wrapper.addEventListener('touchstart', touchStart, { passive: true });
+            wrapper.addEventListener('touchmove', touchMove, { passive: false });
+            wrapper.addEventListener('touchend', touchEnd);
+
+            wrapper.addEventListener('mousedown', touchStart);
+            wrapper.addEventListener('mousemove', touchMove);
+            wrapper.addEventListener('mouseup', touchEnd);
+            wrapper.addEventListener('mouseleave', touchEnd);
+        }
+
+        function touchStart(e) {
+            stopAutoSlide();
+            sliderState.isDragging = true;
+            sliderState.isScrolling = false;
+            sliderState.startPos = getPositionX(e);
+            sliderState.startY = e.type.includes('mouse')? e.pageY : e.touches[0].clientY;
+            sliderState.animationID = requestAnimationFrame(animation);
+            document.getElementById('slider-wrapper').style.cursor = 'grabbing';
+            document.getElementById('slider-wrapper').style.transition = 'none';
+        }
+
+        function touchMove(e) {
+            if (!sliderState.isDragging) return;
+
+            const currentX = getPositionX(e);
+            const currentY = e.type.includes('mouse')? e.pageY : e.touches[0].clientY;
+            const diffX = Math.abs(currentX - sliderState.startPos);
+            const diffY = Math.abs(currentY - sliderState.startY);
+
+            // إذا السحب عمودي أكثر من أفقي، خلي الصفحة تسكرول عادي
+            if (diffY > diffX && diffY > 10) {
+                sliderState.isScrolling = true;
+                return;
+            }
+
+            // إذا السحب أفقي، امنع السكرول العمودي وحرك السلايدر
+            if (diffX > diffY) {
+                e.preventDefault();
+                const diffPx = currentX - sliderState.startPos;
+                const diffPercent = (diffPx / sliderState.containerWidth) * 100;
+                sliderState.currentTranslate = sliderState.prevTranslate + diffPercent;
+            }
+        }
+
+        function touchEnd() {
+            if (!sliderState.isDragging) return;
+            sliderState.isDragging = false;
+            cancelAnimationFrame(sliderState.animationID);
+            document.getElementById('slider-wrapper').style.cursor = 'grab';
+
+            // إذا كان عم يسكرول، لا تقلب السلايد
+            if (sliderState.isScrolling) {
+                sliderState.isScrolling = false;
+                startAutoSlide();
+                return;
+            }
+
+            const movedPercent = sliderState.currentTranslate - sliderState.prevTranslate;
+
+            if (movedPercent < -10 && sliderState.currentSlide < sliderState.totalSlides - 1) {
+                sliderState.currentSlide += 1;
+            }
+            if (movedPercent > 10 && sliderState.currentSlide > 0) {
+                sliderState.currentSlide -= 1;
+            }
+
+            goToSlide(sliderState.currentSlide);
+            startAutoSlide();
+        }
+
+        function getPositionX(e) {
+            return e.type.includes('mouse')? e.pageX : e.touches[0].clientX;
+        }
+
+        function animation() {
+            setSliderPosition();
+            if (sliderState.isDragging) requestAnimationFrame(animation);
+        }
+
+        function setSliderPosition() {
+            const wrapper = document.getElementById('slider-wrapper');
+            wrapper.style.transform = `translateX(${sliderState.currentTranslate}%)`;
+        }
+
+        function goToSlide(index) {
+            sliderState.currentSlide = index;
+            const wrapper = document.getElementById('slider-wrapper');
+
+            const translatePercent = index * -100;
+            sliderState.currentTranslate = translatePercent;
+            sliderState.prevTranslate = translatePercent;
+
+            wrapper.style.transition = 'transform 0.3s ease-out';
+            wrapper.style.transform = `translateX(${translatePercent}%)`;
+
+            document.querySelectorAll('#slider-dots button').forEach((dot, i) => {
+                dot.classList.toggle('bg-white', i === index);
+                dot.classList.toggle('bg-white/40', i!== index);
+            });
+        }
+
+        function startAutoSlide() {
+            stopAutoSlide();
+            if (sliderState.totalSlides <= 1) return;
+            sliderState.autoSlideInterval = setInterval(() => {
+                const nextSlide = (sliderState.currentSlide + 1) % sliderState.totalSlides;
+                goToSlide(nextSlide);
+            }, 5000);
+        }
+
+        function stopAutoSlide() {
+            if (sliderState.autoSlideInterval) {
+                clearInterval(sliderState.autoSlideInterval);
+            }
+        }
+
+        // ========== باقي الكود ==========
+        async function loadContent() {
+            const servicesGrid = document.getElementById('services-grid');
+            const offersGrid = document.getElementById('offers-grid');
+
+            const { data, error } = await sb.from('content')
+      .select('*')
+      .eq('type', 'item')
+      .in('section', ['services', 'offers'])
+      .order('order');
+
+            if (error) {
+                servicesGrid.innerHTML = '<p class="text-red-500 col-span-full text-center">فشل تحميل البيانات</p>';
+                return console.error(error);
+            }
+
+            const services = data.filter(item => item.section === 'services');
+            const offers = data.filter(item => item.section === 'offers');
+
+            if (services.length === 0) {
+                document.getElementById('services-section').style.display = 'none';
+            } else {
+                servicesGrid.innerHTML = renderCards(services);
+            }
+
+            if (offers.length === 0) {
+                document.getElementById('offers-section').style.display = 'none';
+            } else {
+                offersGrid.innerHTML = renderCards(offers);
+            }
+        }
+
+        function renderCards(items) {
+            return items.map(item => {
+                const d = parseValue(item.value);
+                return `
+                    <div class="premium-card group">
+                        <div class="relative overflow-hidden h-80" style="border-radius: 14px 14px 0 0;">
+                            <img src="${d.img}" class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" alt="${d.title}">
+                            <div class="absolute inset-0 bg-black/40 group-hover:bg-transparent transition-colors"></div>
+                        </div>
+                        <div class="p-8">
+                            <h3 class="text-xl font-bold mb-4 tracking-wide">${d.title}</h3>
+                            <p class="text-gray-500 text-sm mb-8 font-light line-clamp-2">${d.desc}</p>
+                            <button onclick="openModal('${item.id}')" class="text-gold text-xs font-bold tracking-[0.2em] border-b border-gold/30 pb-2 hover:border-gold transition-all">
+                                VIEW DETAILS —
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function openModal(id) {
+            const { data } = await sb.from('content').select('*').eq('id', id).single();
+            const d = parseValue(data.value);
+
+            currentItemTitle = d.title || '';
+            document.getElementById('modalTitle').textContent = d.title;
+            document.getElementById('modalText').textContent = d.details || d.desc;
+document.getElementById('modalImg').src = d.img || 'https://raw.githubusercontent.com/Saz-coin/Zaman-alkhier-/refs/heads/main/IMG_20260420_164917.png';
+            if (d.price &&!isNaN(parseFloat(d.price))) {
+                document.getElementById('newPrice').textContent = formatOMR(d.price);
+                document.getElementById('priceBox').style.display = 'block';
+            } else {
+                document.getElementById('priceBox').style.display = 'none';
+            }
+
+            document.getElementById('detailsModal').classList.replace('hidden', 'flex');
+        }
+
+        document.getElementById('closeModalBtn').onclick = () => {
+            document.getElementById('detailsModal').classList.replace('flex', 'hidden');
+        };
+
+        document.getElementById('detailsModal').onclick = (e) => {
+            if (e.target.id === 'detailsModal') {
+                document.getElementById('detailsModal').classList.replace('flex', 'hidden');
+            }
+        };
+        // قفل المودال بزر ESC
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && !document.getElementById('detailsModal').classList.contains('hidden')) {
+                document.getElementById('detailsModal').classList.replace('flex', 'hidden');
+            }
+        });
+document.getElementById('whatsappOrderBtn').onclick = (e) => {
+    e.preventDefault();
+    const msg = `*${currentItemTitle}*\n\nمرحباً زمان الخير، أرغب في الاستفسار عن هذا الصنف.`;
+    window.open(`https://wa.me/${PHONE}?text=${encodeURIComponent(msg)}`, '_blank');
+};
+
+// قائمة تواصل معنا
+const contactBtn = document.getElementById('contactDropdownBtn');
+const contactDropdown = document.getElementById('contactDropdown');
+
+// فتح/إغلاق القائمة
+contactBtn.onclick = (e) => {
+    e.stopPropagation();
+    contactDropdown.classList.toggle('hidden');
+};
+
+// سكر القائمة لما يضغط برا
+document.addEventListener('click', (e) => {
+    if (!contactBtn.contains(e.target) && !contactDropdown.contains(e.target)) {
+        contactDropdown.classList.add('hidden');
+    }
+});
+document.getElementById('footerText').textContent = `© ${new Date().getFullYear()} ZAMAN ALKHEIR • MUSCAT • OMAN`;
+         document.addEventListener('DOMContentLoaded', () => {
+            loadSlider();
+            loadContent();
+        });
+    </script>
+</body>
+</html>
