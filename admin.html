@@ -7,6 +7,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Tajawal', sans-serif; background: #0c0c0c; color: white; }
@@ -31,8 +32,11 @@
         .box-card img { width: 100%; height: 140px; object-fit: cover; border-radius: 8px; }
         .vat-checkbox-label { display: flex; align-items: center; gap: 8px; cursor: pointer; background: rgba(212,175,55,0.1); padding: 10px; border-radius: 8px; margin-bottom: 15px; }
         .vat-checkbox-label input { width: 20px; height: 20px; margin: 0; }
-        .warning-banner { background: #ef4444; color: white; padding: 10px; text-align: center; border-radius: 8px; margin-bottom: 20px; }
-        .success-banner { background: #16a34a; color: white; padding: 10px; text-align: center; border-radius: 8px; margin-bottom: 20px; }
+        .notification { position: fixed; top: 20px; right: 20px; padding: 15px 25px; border-radius: 10px; color: white; z-index: 1000; animation: slideIn 0.3s ease; }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        .notification.success { background: #16a34a; }
+        .notification.error { background: #ef4444; }
+        .admin-only { transition: opacity 0.3s; }
     </style>
 </head>
 <body>
@@ -40,9 +44,10 @@
 <div id="login-page" style="min-height:100vh; display:flex; align-items:center; justify-content:center; padding:20px;">
     <div style="background:#121212; padding:40px; border-radius:20px; width:100%; max-width:400px; text-align:center;">
         <h2 style="font-size:28px; font-weight:900;">زمان الخير</h2>
-        <input id="email" type="email" placeholder="الإيميل">
-        <input id="password" type="password" placeholder="كلمة المرور">
-        <button onclick="login()" class="btn" style="width:100%; background:#D4AF37; color:black; padding:14px;">دخول</button>
+        <p style="color:#9ca3af; margin-bottom:20px;">لوحة تحكم المشرف</p>
+        <input id="email" type="email" placeholder="الإيميل" autocomplete="email">
+        <input id="password" type="password" placeholder="كلمة المرور" autocomplete="current-password">
+        <button id="login-btn" class="btn" style="width:100%; background:#D4AF37; color:black; padding:14px;">دخول</button>
         <p id="error" style="color:#ef4444; margin-top:14px;"></p>
     </div>
 </div>
@@ -50,7 +55,7 @@
 <div id="dashboard" style="display:none;">
     <div style="background:#121212; border-bottom:1px solid rgba(255,255,255,0.1); padding:16px 24px; display:flex; justify-content:space-between; align-items:center;">
         <h2>زمان الخير - لوحة التحكم</h2>
-        <button onclick="logout()" class="btn" style="background:#ef4444; padding:8px 16px;">خروج</button>
+        <button id="logout-btn" class="btn" style="background:#ef4444; padding:8px 16px;">خروج</button>
     </div>
     <div style="padding:20px; max-width:1200px; margin:0 auto;">
         <div class="tab-buttons">
@@ -61,7 +66,7 @@
 
         <!-- تبويب المحتوى -->
         <div id="items-tab">
-            <div style="background:#121212; padding:25px; border-radius:20px; margin-bottom:30px;">
+            <div class="admin-only" style="background:#121212; padding:25px; border-radius:20px; margin-bottom:30px;">
                 <h3 style="color:#D4AF37;">إضافة محتوى جديد</h3>
                 <input type="hidden" id="item-id">
                 <select id="item-section">
@@ -70,63 +75,63 @@
                     <option value="slider">السلايدر</option>
                 </select>
                 <div id="slider-helper" class="helper-text" style="display:none;">للسلايدر: العنوان والصورة فقط</div>
-                <input id="item-title" placeholder="العنوان">
-                <textarea id="item-desc" placeholder="الوصف"></textarea>
-                <textarea id="item-details" placeholder="التفاصيل"></textarea>
+                <input id="item-title" placeholder="العنوان" maxlength="80">
+                <textarea id="item-desc" placeholder="الوصف" maxlength="250"></textarea>
+                <textarea id="item-details" placeholder="التفاصيل" maxlength="500"></textarea>
                 <div style="display:flex; gap:10px;">
                     <input id="item-img" placeholder="رابط الصورة">
-                    <input type="file" id="file-upload" accept="image/*" style="display:none;">
-                    <button onclick="triggerFileUpload('item')" class="btn" style="background:#D4AF37; color:black;">رفع صورة</button>
+                    <input type="file" id="file-upload" accept="image/png,image/jpeg,image/webp" style="display:none;">
+                    <button id="upload-item-btn" class="btn" style="background:#D4AF37; color:black;">رفع صورة</button>
                 </div>
                 <div style="position:relative;">
-                    <input id="item-price" type="text" placeholder="السعر">
+                    <input id="item-price" type="text" placeholder="السعر" maxlength="10">
                     <span style="position:absolute; left:15px; bottom:20px; color:#D4AF37;">ر.ع</span>
                 </div>
                 <label class="vat-checkbox-label">
                     <input type="checkbox" id="item-show-vat">
                     <span>إظهار + V.A.T 5%</span>
                 </label>
-                <button onclick="saveItem()" class="btn" style="width:100%; background:#16a34a; color:white;">حفظ</button>
+                <button id="save-item-btn" class="btn" style="width:100%; background:#16a34a; color:white;">حفظ</button>
             </div>
             <div id="items-list"></div>
         </div>
 
         <!-- تبويب المنيو -->
         <div id="menu-tab" style="display:none;">
-            <div style="background:#121212; padding:25px; border-radius:20px;">
+            <div class="admin-only" style="background:#121212; padding:25px; border-radius:20px;">
                 <h3>إضافة صورة منيو</h3>
                 <input type="hidden" id="menu-id">
                 <div style="display:flex; gap:10px;">
                     <input id="menu-img" placeholder="رابط الصورة">
-                    <input type="file" id="menu-file-upload" accept="image/*" style="display:none;">
-                    <button onclick="triggerFileUpload('menu')" class="btn" style="background:#D4AF37; color:black;">رفع</button>
+                    <input type="file" id="menu-file-upload" accept="image/png,image/jpeg,image/webp" style="display:none;">
+                    <button id="upload-menu-btn" class="btn" style="background:#D4AF37; color:black;">رفع</button>
                 </div>
-                <input id="menu-order" type="number" placeholder="الترتيب">
-                <button onclick="saveMenuImage()" class="btn" style="background:#16a34a; color:white;">حفظ</button>
+                <input id="menu-order" type="number" placeholder="الترتيب" min="1">
+                <button id="save-menu-btn" class="btn" style="background:#16a34a; color:white;">حفظ</button>
             </div>
             <div id="menu-list" class="menu-grid"></div>
-            <button onclick="saveAllOrders()" class="btn" style="background:#D4AF37; margin-top:20px;">حفظ الترتيب</button>
+            <button id="save-orders-btn" class="btn admin-only" style="background:#D4AF37; margin-top:20px;">حفظ الترتيب</button>
         </div>
 
         <!-- تبويب البوكسات -->
         <div id="boxes-tab" style="display:none;">
-            <div style="background:#121212; padding:25px; border-radius:20px;">
+            <div class="admin-only" style="background:#121212; padding:25px; border-radius:20px;">
                 <h3>إضافة بوكس</h3>
                 <input type="hidden" id="box-id">
-                <input id="box-name" placeholder="اسم البوكس">
-                <textarea id="box-description" placeholder="الوصف"></textarea>
+                <input id="box-name" placeholder="اسم البوكس" maxlength="100">
+                <textarea id="box-description" placeholder="الوصف" maxlength="300"></textarea>
                 <div style="display:flex; gap:10px;">
                     <input id="box-img" placeholder="رابط الصورة">
-                    <input type="file" id="box-file-upload" accept="image/*" style="display:none;">
-                    <button onclick="triggerFileUpload('box')" class="btn" style="background:#D4AF37; color:black;">رفع</button>
+                    <input type="file" id="box-file-upload" accept="image/png,image/jpeg,image/webp" style="display:none;">
+                    <button id="upload-box-btn" class="btn" style="background:#D4AF37; color:black;">رفع</button>
                 </div>
-                <input id="box-price" placeholder="السعر">
-                <input id="box-order" placeholder="الترتيب">
+                <input id="box-price" placeholder="السعر" maxlength="10">
+                <input id="box-order" placeholder="الترتيب" type="number" min="1">
                 <label class="vat-checkbox-label">
                     <input type="checkbox" id="box-show-vat">
                     <span>إظهار + V.A.T 5%</span>
                 </label>
-                <button onclick="saveBox()" class="btn" style="background:#16a34a; color:white;">حفظ</button>
+                <button id="save-box-btn" class="btn" style="background:#16a34a; color:white;">حفظ</button>
             </div>
             <div id="boxes-list" class="box-grid"></div>
         </div>
@@ -134,94 +139,121 @@
 </div>
 
 <script>
-    // ==================== التهيئة والإعدادات الأمنية ====================
+    // ==================== التهيئة ====================
     const SB_URL = 'https://dbkjzpoopvmahoflwkdr.supabase.co';
     const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRia2p6cG9vcHZtYWhvZmx3a2RyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY2MTUxNTAsImV4cCI6MjA5MjE5MTE1MH0.r1o_lNyALA2oTV2smlvg15p1ULSzQct_S7AUsgq-u30';
     const sb = window.supabase.createClient(SB_URL, SB_KEY);
     const BUCKET = 'Z images';
+    let currentIsAdmin = false;
 
-    // دوال مساعدة أمنية
+    // ==================== الإشعارات ====================
+    function showNotification(message, type) {
+        type = type || 'success';
+        var existing = document.querySelector('.notification');
+        if (existing) existing.remove();
+        var notification = document.createElement('div');
+        notification.className = 'notification ' + type;
+        notification.textContent = message;
+        document.body.appendChild(notification);
+        setTimeout(function() { notification.remove(); }, 3000);
+    }
+
+    // ==================== دوال أمنية ====================
     function sanitizeText(text) {
-        return DOMPurify ? DOMPurify.sanitize(text) : String(text).replace(/[&<>]/g, function(m) {
-            if (m === '&') return '&amp;';
-            if (m === '<') return '&lt;';
-            if (m === '>') return '&gt;';
-            return m;
-        });
+        if (!DOMPurify) return String(text).replace(/[&<>"']/g, '');
+        return DOMPurify.sanitize(String(text), { ALLOWED_TAGS: [], ALLOWED_ATTR: [] });
     }
 
     function validatePrice(price) {
-        let cleaned = String(price).trim().replace(/[^0-9.]/g, '');
+        var cleaned = String(price).trim().replace(/[^0-9.]/g, '');
         if (cleaned === '') return '0';
-        let parts = cleaned.split('.');
+        var parts = cleaned.split('.');
         if (parts.length > 2) parts = [parts[0], parts.slice(1).join('')];
-        let final = parts.join('.');
-        let num = parseFloat(final);
+        var final = parts.join('.');
+        var num = parseFloat(final);
         return isNaN(num) ? '0' : num.toFixed(3);
     }
 
     function secureImageUrl(url) {
         if (!url) return '';
-        let clean = String(url).trim();
+        var clean = String(url).trim();
         if (clean.startsWith('http://')) clean = clean.replace('http://', 'https://');
         if (clean.startsWith('https://')) return clean;
         return '';
     }
 
+    // ==================== التحقق من صلاحية المشرف ====================
+    async function checkAdminStatus() {
+        var sessionResult = await sb.auth.getSession();
+        var user = sessionResult.data.session ? sessionResult.data.session.user : null;
+        if (!user) return false;
+        
+        var result = await sb.from('admins').select('user_id').eq('user_id', user.id).maybeSingle();
+        currentIsAdmin = !result.error && result.data;
+        
+        // إظهار/إخفاء عناصر المشرف
+        document.querySelectorAll('.admin-only').forEach(function(el) {
+            el.style.display = currentIsAdmin ? '' : 'none';
+        });
+        
+        return currentIsAdmin;
+    }
+
     // ==================== رفع آمن للصور ====================
-    async function uploadFile(file, folder = 'general') {
-        const allowed = ['image/jpeg', 'image/png', 'image/webp', 'image/jpg'];
-        if (!allowed.includes(file.type)) throw new Error('✅ يسمح فقط بـ JPG, PNG, WebP');
-        if (file.size > 2 * 1024 * 1024) throw new Error('⚠️ الحد الأقصى 2 ميجابايت');
+    async function uploadFile(file, folder) {
+        folder = folder || 'general';
+        var allowed = ['image/jpeg', 'image/png', 'image/webp'];
+        if (allowed.indexOf(file.type) === -1) throw new Error('يسمح فقط بـ JPG, PNG, WebP');
+        if (file.size > 2 * 1024 * 1024) throw new Error('الحد الأقصى 2 ميجابايت');
+        
+        if (file.name.toLowerCase().endsWith('.svg')) throw new Error('SVG غير مسموح به');
 
-        const ext = file.name.split('.').pop();
-        const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${ext}`;
-        const path = `${folder}/${fileName}`;
+        var ext = file.name.split('.').pop().toLowerCase();
+        if (['jpg', 'jpeg', 'png', 'webp'].indexOf(ext) === -1) throw new Error('امتداد غير مسموح');
 
-        const { error } = await sb.storage.from(BUCKET).upload(path, file, {
+        var fileName = Date.now() + '_' + Math.random().toString(36).substring(7) + '.' + ext;
+        var path = folder + '/' + fileName;
+
+        var uploadResult = await sb.storage.from(BUCKET).upload(path, file, {
             cacheControl: '3600',
             upsert: false
         });
-        if (error) throw error;
+        if (uploadResult.error) throw new Error('فشل رفع الملف');
 
-        const { data: publicUrl } = sb.storage.from(BUCKET).getPublicUrl(path);
-        return secureImageUrl(publicUrl.publicUrl);
+        var urlResult = sb.storage.from(BUCKET).getPublicUrl(path);
+        return secureImageUrl(urlResult.data.publicUrl);
     }
 
-    window.triggerFileUpload = function(type) {
-        let input;
-        if (type === 'item') input = document.getElementById('file-upload');
-        else if (type === 'menu') input = document.getElementById('menu-file-upload');
-        else input = document.getElementById('box-file-upload');
-
-        input.onchange = async (e) => {
-            const file = e.target.files[0];
+    // ==================== رفع الصور ====================
+    function setupFileUpload(buttonId, inputId, targetInputId, folder) {
+        document.getElementById(buttonId).addEventListener('click', function() {
+            document.getElementById(inputId).click();
+        });
+        document.getElementById(inputId).addEventListener('change', async function(e) {
+            var file = e.target.files[0];
             if (!file) return;
-            const btn = e.target.nextElementSibling;
-            const originalText = btn.innerText;
-            btn.innerText = 'جاري الرفع...';
+            var btn = document.getElementById(buttonId);
+            var originalText = btn.textContent;
+            btn.textContent = 'جاري الرفع...';
             btn.disabled = true;
             try {
-                const url = await uploadFile(file, type === 'menu' ? 'menu' : (type === 'box' ? 'boxes' : 'items'));
-                if (type === 'item') document.getElementById('item-img').value = url;
-                else if (type === 'menu') document.getElementById('menu-img').value = url;
-                else document.getElementById('box-img').value = url;
-                alert('✅ تم رفع الصورة');
+                var url = await uploadFile(file, folder);
+                document.getElementById(targetInputId).value = url;
+                showNotification('تم رفع الصورة بنجاح', 'success');
             } catch (err) {
-                alert('❌ فشل الرفع: ' + err.message);
+                showNotification('فشل الرفع: ' + err.message, 'error');
             } finally {
-                btn.innerText = originalText;
+                btn.textContent = originalText;
                 btn.disabled = false;
-                input.value = '';
+                e.target.value = '';
             }
-        };
-        input.click();
-    };
+        });
+    }
 
     // ==================== إدارة التبويبات ====================
     function switchTab(tabName) {
-        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-        document.querySelector(`.tab-btn[data-tab="${tabName}"]`).classList.add('active');
+        document.querySelectorAll('.tab-btn').forEach(function(btn) { btn.classList.remove('active'); });
+        document.querySelector('.tab-btn[data-tab="' + tabName + '"]').classList.add('active');
         document.getElementById('items-tab').style.display = tabName === 'items' ? 'block' : 'none';
         document.getElementById('menu-tab').style.display = tabName === 'menu' ? 'block' : 'none';
         document.getElementById('boxes-tab').style.display = tabName === 'boxes' ? 'block' : 'none';
@@ -230,15 +262,19 @@
         if (tabName === 'boxes') loadBoxes();
     }
 
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.addEventListener('click', () => switchTab(btn.getAttribute('data-tab')));
+    document.querySelectorAll('.tab-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() { switchTab(btn.getAttribute('data-tab')); });
     });
 
     // ==================== إدارة المحتوى ====================
+    document.getElementById('save-item-btn').addEventListener('click', saveItem);
+    
     async function saveItem() {
-        const id = document.getElementById('item-id').value;
-        const section = document.getElementById('item-section').value;
-        const itemData = {
+        if (!currentIsAdmin) { showNotification('غير مصرح', 'error'); return; }
+        
+        var id = document.getElementById('item-id').value;
+        var section = document.getElementById('item-section').value;
+        var itemData = {
             title: sanitizeText(document.getElementById('item-title').value),
             desc: sanitizeText(document.getElementById('item-desc').value),
             details: sanitizeText(document.getElementById('item-details').value),
@@ -246,92 +282,256 @@
             price: validatePrice(document.getElementById('item-price').value),
             show_vat_text: document.getElementById('item-show-vat').checked
         };
-        if (!itemData.title) return alert('⚠️ العنوان مطلوب');
         
-        const payload = {
-            section, type: 'item',
+        if (!itemData.title) {
+            showNotification('العنوان مطلوب', 'error');
+            return;
+        }
+        
+        var payload = {
+            section: section,
+            type: 'item',
             key: itemData.title.replace(/\s+/g, '-').toLowerCase(),
             value: JSON.stringify(itemData),
             order: Date.now(),
             show_vat_text: itemData.show_vat_text
         };
         
-        let result = id ? await sb.from('content').update(payload).eq('id', id) : await sb.from('content').insert(payload);
-        if (result.error) alert('خطأ: ' + result.error.message);
-        else { alert('تم الحفظ'); clearItemForm(); loadItems(); }
+        var result = id 
+            ? await sb.from('content').update(payload).eq('id', id) 
+            : await sb.from('content').insert(payload);
+            
+        if (result.error) {
+            showNotification('حدث خطأ أثناء الحفظ، يرجى المحاولة مرة أخرى', 'error');
+        } else {
+            showNotification('تم الحفظ بنجاح', 'success');
+            clearItemForm();
+            loadItems();
+        }
     }
 
     async function loadItems() {
-        const section = document.getElementById('item-section').value;
-        const { data } = await sb.from('content').select('*').eq('section', section).order('order', { ascending: false });
-        const container = document.getElementById('items-list');
+        var section = document.getElementById('item-section').value;
+        var result = await sb.from('content').select('*').eq('section', section).order('order', { ascending: false });
+        var container = document.getElementById('items-list');
         container.innerHTML = '';
-        if (!data?.length) { container.innerHTML = '<p>لا يوجد محتوى</p>'; return; }
-        data.forEach(item => {
-            const val = JSON.parse(item.value);
-            container.innerHTML += `
-                <div style="background:#0c0c0c; padding:12px; border-radius:12px; margin-bottom:10px; display:flex; align-items:center; gap:10px;">
-                    <img src="${secureImageUrl(val.img)}" width="50" height="50" style="border-radius:8px; object-fit:cover;" onerror="this.src='https://placehold.co/50x50'">
-                    <div style="flex:1;"><strong>${sanitizeText(val.title)}</strong> ${val.price ? `<span class="price-tag">${val.price} ر.ع</span>` : ''}</div>
-                    <button onclick='editItem("${item.id}")' style="color:#3b82f6;">تعديل</button>
-                    <button onclick='deleteItem("${item.id}")' style="color:#ef4444;">حذف</button>
-                </div>
-            `;
+        
+        if (result.error || !result.data || !result.data.length) {
+            container.innerHTML = '<p style="color:#9ca3af; text-align:center; padding:20px;">لا يوجد محتوى بعد</p>';
+            return;
+        }
+        
+        var fragment = document.createDocumentFragment();
+        result.data.forEach(function(item) {
+            var val = JSON.parse(item.value);
+            var card = document.createElement('div');
+            card.style.cssText = 'background:#0c0c0c; padding:12px; border-radius:12px; margin-bottom:10px; display:flex; align-items:center; gap:10px;';
+            
+            var img = document.createElement('img');
+            img.src = secureImageUrl(val.img) || 'https://placehold.co/50x50';
+            img.width = 50;
+            img.height = 50;
+            img.style.cssText = 'border-radius:8px; object-fit:cover;';
+            img.alt = '';
+            img.onerror = function() { this.src = 'https://placehold.co/50x50'; };
+            
+            var infoDiv = document.createElement('div');
+            infoDiv.style.flex = '1';
+            var strong = document.createElement('strong');
+            strong.textContent = sanitizeText(val.title);
+            infoDiv.appendChild(strong);
+            if (val.price) {
+                var priceSpan = document.createElement('span');
+                priceSpan.className = 'price-tag';
+                priceSpan.textContent = ' ' + sanitizeText(val.price) + ' ر.ع';
+                infoDiv.appendChild(priceSpan);
+            }
+            
+            card.appendChild(img);
+            card.appendChild(infoDiv);
+            
+            if (currentIsAdmin) {
+                var editBtn = document.createElement('button');
+                editBtn.textContent = 'تعديل';
+                editBtn.style.cssText = 'color:#3b82f6; background:none; border:none; cursor:pointer; font-family:Tajawal; margin-left:8px;';
+                editBtn.addEventListener('click', function() { editItem(item.id); });
+                
+                var deleteBtn = document.createElement('button');
+                deleteBtn.textContent = 'حذف';
+                deleteBtn.style.cssText = 'color:#ef4444; background:none; border:none; cursor:pointer; font-family:Tajawal;';
+                deleteBtn.addEventListener('click', function() { deleteItem(item.id); });
+                
+                card.appendChild(editBtn);
+                card.appendChild(deleteBtn);
+            }
+            
+            fragment.appendChild(card);
         });
+        container.appendChild(fragment);
     }
 
-    window.editItem = async (id) => {
-        const { data } = await sb.from('content').select('*').eq('id', id).single();
-        const val = JSON.parse(data.value);
-        document.getElementById('item-id').value = data.id;
-        document.getElementById('item-section').value = data.section;
+    async function editItem(id) {
+        if (!currentIsAdmin) return;
+        var result = await sb.from('content').select('*').eq('id', id).single();
+        if (result.error) { showNotification('حدث خطأ', 'error'); return; }
+        var val = JSON.parse(result.data.value);
+        document.getElementById('item-id').value = result.data.id;
+        document.getElementById('item-section').value = result.data.section;
         document.getElementById('item-title').value = val.title || '';
         document.getElementById('item-desc').value = val.desc || '';
         document.getElementById('item-details').value = val.details || '';
         document.getElementById('item-img').value = secureImageUrl(val.img || '');
         document.getElementById('item-price').value = val.price || '';
         document.getElementById('item-show-vat').checked = val.show_vat_text || false;
-        window.scrollTo({ top: 0 });
-    };
-
-    window.deleteItem = async (id) => { if (confirm('هل أنت متأكد؟')) { await sb.from('content').delete().eq('id', id); loadItems(); } };
-    function clearItemForm() { document.getElementById('item-id').value = ''; document.getElementById('item-title').value = ''; document.getElementById('item-desc').value = ''; document.getElementById('item-details').value = ''; document.getElementById('item-img').value = ''; document.getElementById('item-price').value = ''; document.getElementById('item-show-vat').checked = false; }
-
-    // ==================== إدارة المنيو مع الترتيب ====================
-    let sortable = null;
-    async function loadMenuImages() {
-        const { data } = await sb.from('menu').select('*').order('order_index', { ascending: true });
-        const container = document.getElementById('menu-list');
-        container.innerHTML = '';
-        data?.forEach(item => {
-            const div = document.createElement('div');
-            div.className = 'menu-card';
-            div.setAttribute('data-id', item.id);
-            div.innerHTML = `<div class="drag-handle">⋮⋮</div><img src="${secureImageUrl(item.image_url)}" style="width:100%; height:150px; object-fit:cover;"><div>الترتيب: ${item.order_index}</div><div class="menu-actions"><button class="edit-menu" onclick='editMenuImage("${item.id}", "${secureImageUrl(item.image_url)}", ${item.order_index})'>تعديل</button><button class="delete-menu" onclick='deleteMenuImage("${item.id}")'>حذف</button></div>`;
-            container.appendChild(div);
-        });
-        if (sortable) sortable.destroy();
-        sortable = new Sortable(container, { handle: '.drag-handle', animation: 300 });
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    window.saveMenuImage = async () => {
-        const id = document.getElementById('menu-id').value;
-        const url = secureImageUrl(document.getElementById('menu-img').value);
-        const order = parseInt(document.getElementById('menu-order').value) || Date.now();
-        if (!url) return alert('⚠️ يرجى إدخال صورة');
-        let result = id ? await sb.from('menu').update({ image_url: url, order_index: order }).eq('id', id) : await sb.from('menu').insert({ image_url: url, order_index: order });
-        if (result.error) alert('❌ خطأ: ' + result.error.message);
-        else { alert('✅ تم الحفظ'); document.getElementById('menu-id').value = ''; document.getElementById('menu-img').value = ''; document.getElementById('menu-order').value = ''; loadMenuImages(); }
-    };
+    async function deleteItem(id) {
+        if (!currentIsAdmin) return;
+        if (!confirm('هل أنت متأكد من الحذف؟')) return;
+        var result = await sb.from('content').delete().eq('id', id);
+        if (result.error) { showNotification('حدث خطأ', 'error'); return; }
+        showNotification('تم الحذف', 'success');
+        loadItems();
+    }
 
-    window.editMenuImage = (id, img, order) => { document.getElementById('menu-id').value = id; document.getElementById('menu-img').value = img; document.getElementById('menu-order').value = order; window.scrollTo({ top: 0 }); };
-    window.deleteMenuImage = async (id) => { if (confirm('حذف؟')) { await sb.from('menu').delete().eq('id', id); loadMenuImages(); } };
-    window.saveAllOrders = async () => { const cards = document.querySelectorAll('#menu-list .menu-card'); for (let i = 0; i < cards.length; i++) { await sb.from('menu').update({ order_index: i + 1 }).eq('id', cards[i].getAttribute('data-id')); } alert('تم حفظ الترتيب'); loadMenuImages(); };
+    function clearItemForm() {
+        document.getElementById('item-id').value = '';
+        document.getElementById('item-title').value = '';
+        document.getElementById('item-desc').value = '';
+        document.getElementById('item-details').value = '';
+        document.getElementById('item-img').value = '';
+        document.getElementById('item-price').value = '';
+        document.getElementById('item-show-vat').checked = false;
+    }
+
+    // ==================== إدارة المنيو ====================
+    document.getElementById('save-menu-btn').addEventListener('click', saveMenuImage);
+    document.getElementById('save-orders-btn').addEventListener('click', saveAllOrders);
+    var sortable = null;
+
+    async function loadMenuImages() {
+        var result = await sb.from('menu').select('*').order('order_index', { ascending: true });
+        var container = document.getElementById('menu-list');
+        container.innerHTML = '';
+        
+        if (result.error || !result.data || !result.data.length) {
+            container.innerHTML = '<p style="color:#9ca3af; text-align:center; padding:20px; width:100%;">لا توجد صور منيو</p>';
+            return;
+        }
+        
+        var fragment = document.createDocumentFragment();
+        result.data.forEach(function(item) {
+            var div = document.createElement('div');
+            div.className = 'menu-card';
+            div.setAttribute('data-id', item.id);
+            
+            var handle = document.createElement('div');
+            handle.className = 'drag-handle';
+            handle.textContent = '⋮⋮';
+            
+            var img = document.createElement('img');
+            img.src = secureImageUrl(item.image_url) || 'https://placehold.co/200x150';
+            img.style.cssText = 'width:100%; height:150px; object-fit:cover;';
+            img.alt = 'صورة منيو';
+            img.onerror = function() { this.src = 'https://placehold.co/200x150'; };
+            
+            var orderDiv = document.createElement('div');
+            orderDiv.style.cssText = 'color:#9ca3af; font-size:12px;';
+            orderDiv.textContent = 'الترتيب: ' + item.order_index;
+            
+            div.appendChild(handle);
+            div.appendChild(img);
+            div.appendChild(orderDiv);
+            
+            if (currentIsAdmin) {
+                var actions = document.createElement('div');
+                actions.className = 'menu-actions';
+                
+                var editBtn = document.createElement('button');
+                editBtn.className = 'edit-menu';
+                editBtn.textContent = 'تعديل';
+                editBtn.addEventListener('click', function() { 
+                    editMenuImage(item.id, secureImageUrl(item.image_url), item.order_index); 
+                });
+                
+                var deleteBtn = document.createElement('button');
+                deleteBtn.className = 'delete-menu';
+                deleteBtn.textContent = 'حذف';
+                deleteBtn.addEventListener('click', function() { deleteMenuImage(item.id); });
+                
+                actions.appendChild(editBtn);
+                actions.appendChild(deleteBtn);
+                div.appendChild(actions);
+            }
+            
+            fragment.appendChild(div);
+        });
+        container.appendChild(fragment);
+        
+        if (sortable) sortable.destroy();
+        if (currentIsAdmin) {
+            sortable = new Sortable(container, { handle: '.drag-handle', animation: 300 });
+        }
+    }
+
+    async function saveMenuImage() {
+        if (!currentIsAdmin) { showNotification('غير مصرح', 'error'); return; }
+        var id = document.getElementById('menu-id').value;
+        var url = secureImageUrl(document.getElementById('menu-img').value);
+        var order = parseInt(document.getElementById('menu-order').value) || Date.now();
+        
+        if (!url) { showNotification('يرجى إدخال صورة', 'error'); return; }
+        
+        var result = id 
+            ? await sb.from('menu').update({ image_url: url, order_index: order }).eq('id', id) 
+            : await sb.from('menu').insert({ image_url: url, order_index: order });
+            
+        if (result.error) {
+            showNotification('حدث خطأ، يرجى المحاولة', 'error');
+        } else {
+            showNotification('تم الحفظ', 'success');
+            document.getElementById('menu-id').value = '';
+            document.getElementById('menu-img').value = '';
+            document.getElementById('menu-order').value = '';
+            loadMenuImages();
+        }
+    }
+
+    function editMenuImage(id, img, order) {
+        if (!currentIsAdmin) return;
+        document.getElementById('menu-id').value = id;
+        document.getElementById('menu-img').value = img;
+        document.getElementById('menu-order').value = order;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    async function deleteMenuImage(id) {
+        if (!currentIsAdmin) return;
+        if (!confirm('حذف الصورة؟')) return;
+        var result = await sb.from('menu').delete().eq('id', id);
+        if (result.error) { showNotification('حدث خطأ', 'error'); return; }
+        showNotification('تم الحذف', 'success');
+        loadMenuImages();
+    }
+
+    async function saveAllOrders() {
+        if (!currentIsAdmin) return;
+        var cards = document.querySelectorAll('#menu-list .menu-card');
+        for (var i = 0; i < cards.length; i++) {
+            await sb.from('menu').update({ order_index: i + 1 }).eq('id', cards[i].getAttribute('data-id'));
+        }
+        showNotification('تم حفظ الترتيب', 'success');
+        loadMenuImages();
+    }
 
     // ==================== إدارة البوكسات ====================
+    document.getElementById('save-box-btn').addEventListener('click', saveBox);
+
     async function saveBox() {
-        const id = document.getElementById('box-id').value;
-        const data = {
+        if (!currentIsAdmin) { showNotification('غير مصرح', 'error'); return; }
+        var id = document.getElementById('box-id').value;
+        var data = {
             name: sanitizeText(document.getElementById('box-name').value),
             description: sanitizeText(document.getElementById('box-description').value),
             img: secureImageUrl(document.getElementById('box-img').value),
@@ -339,59 +539,201 @@
             show_vat_text: document.getElementById('box-show-vat').checked,
             order_index: parseInt(document.getElementById('box-order').value) || Date.now()
         };
-        if (!data.name) return alert('⚠️ أدخل اسم البوكس');
-        if (!data.img) return alert('⚠️ أدخل صورة البوكس');
-        let result = id ? await sb.from('boxes').update(data).eq('id', id) : await sb.from('boxes').insert(data);
-        if (result.error) alert('❌ خطأ: ' + result.error.message);
-        else { alert('✅ تم الحفظ'); clearBoxForm(); loadBoxes(); }
+        
+        if (!data.name) { showNotification('أدخل اسم البوكس', 'error'); return; }
+        if (!data.img) { showNotification('أدخل صورة البوكس', 'error'); return; }
+        
+        var result = id 
+            ? await sb.from('boxes').update(data).eq('id', id) 
+            : await sb.from('boxes').insert(data);
+            
+        if (result.error) {
+            showNotification('حدث خطأ، يرجى المحاولة', 'error');
+        } else {
+            showNotification('تم الحفظ', 'success');
+            clearBoxForm();
+            loadBoxes();
+        }
     }
 
     async function loadBoxes() {
-        const { data } = await sb.from('boxes').select('*').order('order_index', { ascending: true });
-        const container = document.getElementById('boxes-list');
+        var result = await sb.from('boxes').select('*').order('order_index', { ascending: true });
+        var container = document.getElementById('boxes-list');
         container.innerHTML = '';
-        data?.forEach(box => {
-            container.innerHTML += `
-                <div class="box-card">
-                    <img src="${secureImageUrl(box.img)}" style="width:100%; height:160px; object-fit:cover;" onerror="this.src='https://placehold.co/400x300'">
-                    <h3 style="color:#D4AF37;">${sanitizeText(box.name)}</h3>
-                    <p>${sanitizeText(box.description || '')}</p>
-                    <div class="price-tag">${box.price} ر.ع ${box.show_vat_text ? '+ VAT' : ''}</div>
-                    <div class="menu-actions"><button class="edit-menu" onclick='editBox("${box.id}")'>تعديل</button><button class="delete-menu" onclick='deleteBox("${box.id}")'>حذف</button></div>
-                </div>
-            `;
+        
+        if (result.error || !result.data || !result.data.length) {
+            container.innerHTML = '<p style="color:#9ca3af; text-align:center; padding:20px; width:100%;">لا توجد بوكسات</p>';
+            return;
+        }
+        
+        var fragment = document.createDocumentFragment();
+        result.data.forEach(function(box) {
+            var card = document.createElement('div');
+            card.className = 'box-card';
+            
+            var img = document.createElement('img');
+            img.src = secureImageUrl(box.img) || 'https://placehold.co/400x300';
+            img.style.cssText = 'width:100%; height:160px; object-fit:cover;';
+            img.alt = sanitizeText(box.name);
+            img.onerror = function() { this.src = 'https://placehold.co/400x300'; };
+            
+            var h3 = document.createElement('h3');
+            h3.style.cssText = 'color:#D4AF37; margin-top:10px;';
+            h3.textContent = sanitizeText(box.name);
+            
+            var desc = document.createElement('p');
+            desc.style.cssText = 'font-size:14px; color:#9ca3af;';
+            desc.textContent = sanitizeText(box.description || '');
+            
+            var priceDiv = document.createElement('div');
+            priceDiv.className = 'price-tag';
+            priceDiv.textContent = sanitizeText(box.price) + ' ر.ع' + (box.show_vat_text ? ' + VAT 5%' : '');
+            
+            card.appendChild(img);
+            card.appendChild(h3);
+            card.appendChild(desc);
+            card.appendChild(priceDiv);
+            
+            if (currentIsAdmin) {
+                var actions = document.createElement('div');
+                actions.className = 'menu-actions';
+                
+                var editBtn = document.createElement('button');
+                editBtn.className = 'edit-menu';
+                editBtn.textContent = 'تعديل';
+                editBtn.addEventListener('click', function() { editBox(box.id); });
+                
+                var deleteBtn = document.createElement('button');
+                deleteBtn.className = 'delete-menu';
+                deleteBtn.textContent = 'حذف';
+                deleteBtn.addEventListener('click', function() { deleteBox(box.id); });
+                
+                actions.appendChild(editBtn);
+                actions.appendChild(deleteBtn);
+                card.appendChild(actions);
+            }
+            
+            fragment.appendChild(card);
         });
+        container.appendChild(fragment);
     }
 
-    window.editBox = async (id) => {
-        const { data } = await sb.from('boxes').select('*').eq('id', id).single();
-        document.getElementById('box-id').value = data.id;
-        document.getElementById('box-name').value = data.name;
-        document.getElementById('box-description').value = data.description || '';
-        document.getElementById('box-img').value = data.img;
-        document.getElementById('box-price').value = data.price;
-        document.getElementById('box-order').value = data.order_index;
-        document.getElementById('box-show-vat').checked = data.show_vat_text;
-        window.scrollTo({ top: 0 });
-    };
+    async function editBox(id) {
+        if (!currentIsAdmin) return;
+        var result = await sb.from('boxes').select('*').eq('id', id).single();
+        if (result.error) { showNotification('حدث خطأ', 'error'); return; }
+        document.getElementById('box-id').value = result.data.id;
+        document.getElementById('box-name').value = result.data.name;
+        document.getElementById('box-description').value = result.data.description || '';
+        document.getElementById('box-img').value = result.data.img;
+        document.getElementById('box-price').value = result.data.price;
+        document.getElementById('box-order').value = result.data.order_index;
+        document.getElementById('box-show-vat').checked = result.data.show_vat_text;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
 
-    window.deleteBox = async (id) => { if (confirm('حذف البوكس؟')) { await sb.from('boxes').delete().eq('id', id); loadBoxes(); clearBoxForm(); } };
-    function clearBoxForm() { document.getElementById('box-id').value = ''; document.getElementById('box-name').value = ''; document.getElementById('box-description').value = ''; document.getElementById('box-img').value = ''; document.getElementById('box-price').value = ''; document.getElementById('box-order').value = ''; document.getElementById('box-show-vat').checked = false; }
+    async function deleteBox(id) {
+        if (!currentIsAdmin) return;
+        if (!confirm('حذف البوكس؟')) return;
+        var result = await sb.from('boxes').delete().eq('id', id);
+        if (result.error) { showNotification('حدث خطأ', 'error'); return; }
+        showNotification('تم الحذف', 'success');
+        loadBoxes();
+        clearBoxForm();
+    }
 
-    // ==================== المصادقة ====================
-    window.login = async () => {
-        const email = document.getElementById('email').value;
-        const pwd = document.getElementById('password').value;
-        const { error } = await sb.auth.signInWithPassword({ email, password: pwd });
-        if (error) document.getElementById('error').innerText = '❌ بيانات دخول خاطئة';
-        else document.getElementById('error').innerText = '';
-    };
-    window.logout = async () => { await sb.auth.signOut(); };
-    
-    sb.auth.onAuthStateChange((e, s) => {
-        if (s) { document.getElementById('login-page').style.display = 'none'; document.getElementById('dashboard').style.display = 'block'; loadItems(); }
-        else { document.getElementById('login-page').style.display = 'flex'; document.getElementById('dashboard').style.display = 'none'; }
-    });
+    function clearBoxForm() {
+        document.getElementById('box-id').value = '';
+        document.getElementById('box-name').value = '';
+        document.getElementById('box-description').value = '';
+        document.getElementById('box-img').value = '';
+        document.getElementById('box-price').value = '';
+        document.getElementById('box-order').value = '';
+        document.getElementById('box-show-vat').checked = false;
+    }
+
+    // ==================== المصادقة مع التحقق من المشرف ====================
+    document.getElementById('login-btn').addEventListener('click', login);
+    document.getElementById('logout-btn').addEventListener('click', logout);
+    document.getElementById('email').addEventListener('keypress', function(e) { if (e.key === 'Enter') login(); });
+    document.getElementById('password').addEventListener('keypress', function(e) { if (e.key === 'Enter') login(); });
+
+    async function login() {
+        var email = document.getElementById('email').value.trim();
+        var pwd = document.getElementById('password').value;
+        var errorEl = document.getElementById('error');
+        
+        if (!email || !pwd) {
+            errorEl.textContent = 'جميع الحقول مطلوبة';
+            return;
+        }
+        
+        errorEl.textContent = '';
+        var btn = document.getElementById('login-btn');
+        btn.textContent = 'جاري الدخول...';
+        btn.disabled = true;
+        
+        // 1. تسجيل الدخول
+        var authResult = await sb.auth.signInWithPassword({ email: email, password: pwd });
+        
+        if (authResult.error) {
+            errorEl.textContent = 'بيانات دخول غير صحيحة';
+            btn.textContent = 'دخول';
+            btn.disabled = false;
+            return;
+        }
+        
+        // 2. التحقق من صلاحية المشرف
+        var adminResult = await sb.from('admins').select('user_id').eq('user_id', authResult.data.user.id).maybeSingle();
+        
+        if (adminResult.error || !adminResult.data) {
+            // ليس مشرفاً - تسجيل خروج فوري
+            await sb.auth.signOut();
+            errorEl.textContent = 'غير مصرح لك بالدخول إلى لوحة التحكم';
+            btn.textContent = 'دخول';
+            btn.disabled = false;
+            return;
+        }
+        
+        // 3. مشرف مصرح
+        currentIsAdmin = true;
+        btn.textContent = 'دخول';
+        btn.disabled = false;
+    }
+
+    async function logout() {
+        currentIsAdmin = false;
+        await sb.auth.signOut();
+    }
+
+    // مراقبة حالة المصادقة
+    sb.auth.onAuthStateChange(async function(event, session) {
+    if (session && session.user) {
+        var email = session.user.email;
+        
+        // تحقق بالإيميل بدل user_id
+        if (email === 'nawar.alsafadi.0@gmail.com') {
+            currentIsAdmin = true;
+            document.getElementById('login-page').style.display = 'none';
+            document.getElementById('dashboard').style.display = 'block';
+            document.querySelectorAll('.admin-only').forEach(function(el) {
+                el.style.display = '';
+            });
+            loadItems();
+        } else {
+            await sb.auth.signOut();
+            document.getElementById('error').textContent = 'غير مصرح لك بالدخول';
+        }
+    } else {
+        currentIsAdmin = false;
+        document.getElementById('login-page').style.display = 'flex';
+        document.getElementById('dashboard').style.display = 'none';
+    }
+});
+    // ==================== تهيئة رفع الملفات ====================
+    setupFileUpload('upload-item-btn', 'file-upload', 'item-img', 'items');
+    setupFileUpload('upload-menu-btn', 'menu-file-upload', 'menu-img', 'menu');
+    setupFileUpload('upload-box-btn', 'box-file-upload', 'box-img', 'boxes');
 </script>
 </body>
 </html>

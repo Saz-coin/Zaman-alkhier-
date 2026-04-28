@@ -5,16 +5,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="color-scheme" content="dark">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://dbkjzpoopvmahoflwkdr.supabase.co https://raw.githubusercontent.com https://fonts.googleapis.com https://fonts.gstatic.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://*.google.com https://*.gstatic.com; img-src 'self' https: data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://dbkjzpoopvmahoflwkdr.supabase.co; connect-src https://dbkjzpoopvmahoflwkdr.supabase.co; frame-src https://www.google.com;">
     <title>زمان الخير | أصالة الضيافة الملكية</title>
-
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;500;700;900&family=Cairo:wght@600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="output.css">
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
-    <!--强制执行 HTTPS -->
     <script>
         (function() {
             if (location.protocol !== 'https:' && location.hostname !== 'localhost' && !location.hostname.includes('127.0.0.1') && !location.hostname.includes('file://')) {
@@ -32,28 +30,26 @@
             <span></span>
             <span></span>
         </button>
-        <img src="https://raw.githubusercontent.com/Saz-coin/Zaman-alkhier-/refs/heads/main/IMG_20260420_164917.png" class="h-12 w-auto" alt="Logo">
+        <img src="https://raw.githubusercontent.com/Saz-coin/Zaman-alkhier-/refs/heads/main/IMG_20260420_164917.png" class="h-12 w-auto" alt="Logo" width="48" height="48">
         <div class="text-left leading-[0.9] font-serif">
             <span class="block text-sm md:text-xl font-bold tracking-[0.15em]">Zaman</span>
             <span class="block text-sm md:text-xl font-bold tracking-[0.15em]">Alkhair</span>
         </div>
     </div>
-
     <div class="desktop-nav-links">
         <a href="#services-section">خدماتنا</a>
         <a href="#offers-section">عروضنا</a>
         <a href="#location">📍 موقعنا</a>
-        <a href="#" onclick="openMenuModal(); return false;">📋 المنيو</a>
+        <a href="#" id="desktopMenuBtn">📋 المنيو</a>
         <a href="#about-section">من نحن</a>
     </div>
-
     <div class="relative">
         <button id="contactDropdownBtn" class="btn-gold-outline px-6 py-2 text-xs font-bold rounded-full hover:bg-[#D4AF37] hover:text-black transition-all">
             تواصل معنا
         </button>
         <div id="contactDropdown" class="hidden absolute left-0 mt-2 w-40 bg-[#111] border border-[#D4AF37]/30 rounded-lg shadow-xl z-50 overflow-hidden">
             <a href="tel:+96899229230" class="block px-4 py-3 text-sm text-white hover:bg-[#D4AF37] hover:text-black transition-all text-center border-b border-[#D4AF37]/20">📞 اتصال</a>
-            <a href="https://wa.me/96899229230?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D9%8B%20%D8%B2%D9%85%D8%A7%D9%86%20%D8%A7%D9%84%D8%AE%D9%8A%D8%B1%20%D8%A3%D8%B1%D8%BA%D8%A8%20%D9%81%D9%8A%20%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1" target="_blank" class="block px-4 py-3 text-sm text-white hover:bg-[#D4AF37] hover:text-black transition-all text-center flex items-center justify-center gap-2">
+            <a href="https://wa.me/96899229230?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D9%8B%20%D8%B2%D9%85%D8%A7%D9%86%20%D8%A7%D9%84%D8%AE%D9%8A%D8%B1%20%D8%A3%D8%B1%D8%BA%D8%A8%20%D9%81%D9%8A%20%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1" target="_blank" rel="noopener" class="block px-4 py-3 text-sm text-white hover:bg-[#D4AF37] hover:text-black transition-all text-center flex items-center justify-center gap-2">
                 <i class="fa-brands fa-whatsapp"></i> واتساب
             </a>
         </div>
@@ -67,13 +63,13 @@
     <a href="#services-section">✨ خدماتنا</a>
     <a href="#offers-section">🎁 عروضنا</a>
     <a href="#location">📍 موقعنا</a>
-    <a href="#" onclick="openMenuModal(); return false;">📋 المنيو</a>
+    <a href="#" id="mobileMenuBtn2">📋 المنيو</a>
     <a href="#about-section">👑 من نحن</a>
 </div>
 
 <section class="relative h-screen flex items-center justify-center text-center px-6 overflow-hidden">
     <div class="absolute inset-0 z-0">
-        <img src="https://raw.githubusercontent.com/Saz-coin/Zaman-alkhier-/refs/heads/main/IMG_20260420_024519.jpg" class="w-full h-full object-cover opacity-40 scale-105" alt="Background">
+        <img src="https://raw.githubusercontent.com/Saz-coin/Zaman-alkhier-/refs/heads/main/IMG_20260420_024519.jpg" class="w-full h-full object-cover opacity-40 scale-105" alt="Background" loading="eager">
         <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/60"></div>
     </div>
     <div class="relative z-10 max-w-4xl">
@@ -116,10 +112,10 @@
             <h2 class="section-title">موقعنا</h2>
         </div>
         <div class="mt-12 mb-16 rounded-2xl overflow-hidden border border-[#D4AF37]/30 shadow-2xl hover:border-[#D4AF37] transition-all duration-500">
-            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3656.745437877292!2d58.42360667533036!3d23.58572317878347!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3e91ff4038b37fd9%3A0x3bc14afca7d73fed!2z2YXYt9i52YUg2LLZhdin2YYg2KfZhNiu2YrYsw!5e0!3m2!1sar!2som!4v1713965600000!5m2!1sar!2som" width="100%" height="300" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3656.745437877292!2d58.42360667533036!3d23.58572317878347!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3e91ff4038b37fd9%3A0x3bc14afca7d73fed!2z2YXYt9i52YUg2LLZhdin2YYg2KfZhNiu2YrYsw!5e0!3m2!1sar!2som!4v1713965600000!5m2!1sar!2som" width="100%" height="300" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="موقع مطعم زمان الخير"></iframe>
         </div>
         <div class="text-center mt-4">
-            <a href="https://maps.app.goo.gl/uHJ7eZb1x9gcDbvP8" target="_blank" class="inline-flex items-center gap-3 bg-gold/10 hover:bg-gold/20 border border-gold/30 rounded-full px-10 py-4 text-gold text-sm font-bold transition-all duration-300 shadow-lg"><span>📍</span> فتح في خرائط جوجل</a>
+            <a href="https://maps.app.goo.gl/uHJ7eZb1x9gcDbvP8" target="_blank" rel="noopener" class="inline-flex items-center gap-3 bg-gold/10 hover:bg-gold/20 border border-gold/30 rounded-full px-10 py-4 text-gold text-sm font-bold transition-all duration-300 shadow-lg"><span>📍</span> فتح في خرائط جوجل</a>
         </div>
     </div>
 </section>
@@ -144,11 +140,11 @@
 
 <footer class="py-8 border-t border-white/5 bg-[#111] text-center">
     <div class="flex justify-center mb-4">
-        <a href="https://www.instagram.com/zaman_alkhair_om?igsh=ZTJ6Z3FpbWplaDc3" target="_blank" class="text-white/70 hover:text-gold transition-all duration-300 inline-flex">
+        <a href="https://www.instagram.com/zaman_alkhair_om?igsh=ZTJ6Z3FpbWplaDc3" target="_blank" rel="noopener" class="text-white/70 hover:text-gold transition-all duration-300 inline-flex" aria-label="Instagram">
             <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zM12 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4z"/></svg>
         </a>
     </div>
-    <img src="https://raw.githubusercontent.com/Saz-coin/Zaman-alkhier-/refs/heads/main/IMG_20260420_164917.png" class="h-10 mx-auto mb-3 opacity-70" alt="Logo">
+    <img src="https://raw.githubusercontent.com/Saz-coin/Zaman-alkhier-/refs/heads/main/IMG_20260420_164917.png" class="h-10 mx-auto mb-3 opacity-70" alt="Logo" width="40" height="40">
     <p id="footerText" class="text-gray-500 tracking-[0.3em] text-[10px] uppercase"></p>
 </footer>
 
@@ -158,7 +154,7 @@
 
 <div id="detailsModal" class="fixed inset-0 z-[200] hidden items-center justify-center p-4 bg-black/95 backdrop-blur-xl">
     <div class="bg-[#111] w-full max-w-2xl border border-white/10 overflow-hidden relative">
-        <button onclick="closeModal()" class="absolute top-4 right-4 w-10 h-10 flex items-center justify-center bg-black/50 hover:bg-black/80 text-white/70 hover:text-white text-2xl rounded-full z-[1001] transition-all border-white/10">✕</button>
+        <button id="closeModalBtn" class="absolute top-4 right-4 w-10 h-10 flex items-center justify-center bg-black/50 hover:bg-black/80 text-white/70 hover:text-white text-2xl rounded-full z-[1001] transition-all border-white/10">✕</button>
         <div id="modalInnerRow" class="flex flex-col md:flex-row max-h-[90vh]">
             <div class="md:w-1/2 h-64 md:h-auto">
                 <img id="modalImg" src="" class="w-full h-full object-cover" alt="">
@@ -181,7 +177,7 @@
                         <button id="orderNowBtn" class="w-full bg-gradient-to-r from-[#D4AF37] to-[#B8941F] py-3 text-black font-black hover:brightness-110 transition-all text-center rounded-lg text-lg flex items-center justify-center gap-2"><i class="fas fa-shopping-cart"></i> اطلب الآن</button>
                         <div id="orderDropdown" class="hidden absolute bottom-full left-0 mb-2 w-full bg-[#111] border border-[#D4AF37]/30 rounded-lg shadow-xl z-50 overflow-hidden">
                             <a href="tel:+96899229230" class="block px-4 py-3 text-sm text-white hover:bg-[#D4AF37] hover:text-black transition-all text-center border-b border-[#D4AF37]/20 flex items-center justify-center gap-2"><i class="fas fa-phone-alt"></i> اتصال</a>
-                            <a id="whatsappOrderBtn" href="#" target="_blank" class="block px-4 py-3 text-sm text-white hover:bg-[#D4AF37] hover:text-black transition-all text-center flex items-center justify-center gap-2"><i class="fa-brands fa-whatsapp"></i> واتساب</a>
+                            <a id="whatsappOrderBtn" href="#" target="_blank" rel="noopener" class="block px-4 py-3 text-sm text-white hover:bg-[#D4AF37] hover:text-black transition-all text-center flex items-center justify-center gap-2"><i class="fa-brands fa-whatsapp"></i> واتساب</a>
                         </div>
                     </div>
                 </div>
@@ -192,14 +188,14 @@
 
 <div id="boxDetailsModal" class="fixed inset-0 z-[300] hidden items-center justify-center p-4 bg-black/95 backdrop-blur-xl">
     <div class="bg-[#111] w-full max-w-md border border-gold/30 rounded-2xl overflow-hidden relative">
-        <button onclick="closeBoxModal()" class="absolute top-3 right-3 w-8 h-8 rounded-full bg-black/50 text-white/70 hover:text-white text-xl flex items-center justify-center">✕</button>
-        <img id="boxModalImg" src="" class="w-full h-56 object-cover">
+        <button id="closeBoxModalBtn" class="absolute top-3 right-3 w-8 h-8 rounded-full bg-black/50 text-white/70 hover:text-white text-xl flex items-center justify-center">✕</button>
+        <img id="boxModalImg" src="" class="w-full h-56 object-cover" alt="">
         <div class="p-5">
             <h3 id="boxModalName" class="text-xl font-bold gold-gradient-text mb-2"></h3>
             <p id="boxModalDesc" class="text-gray-400 text-sm mb-3 leading-relaxed"></p>
             <div class="flex items-center justify-between mt-4">
                 <div class="text-2xl font-bold text-gold" id="boxModalPrice"></div>
-                <button onclick="orderBoxFromModal()" class="bg-[#25D366] px-5 py-2 rounded-full text-white font-bold text-sm flex items-center gap-2 hover:brightness-110 transition-all"><i class="fa-brands fa-whatsapp"></i> طلب</button>
+                <button id="orderBoxBtn" class="bg-[#25D366] px-5 py-2 rounded-full text-white font-bold text-sm flex items-center gap-2 hover:brightness-110 transition-all"><i class="fa-brands fa-whatsapp"></i> طلب</button>
             </div>
         </div>
     </div>
